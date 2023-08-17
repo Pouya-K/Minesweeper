@@ -2,10 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class Level {
     private JFrame frame = new JFrame("Minesweeper");
     private Drawing drawing = new Drawing();
+    private int flagsLeft = 10;
+    public static ArrayList<Square> checkedSquares = new ArrayList<Square>();
     private int screenWidth, screenHeight, numOfMines, gridWidth, gridHeight;
     private Square[][] grid;
     private boolean gameOver = false;
@@ -15,17 +18,21 @@ public class Level {
             gridWidth = 9;
             gridHeight = 9;
             screenWidth = 310;
-            screenHeight = 400;
+            screenHeight = 430;
         }
         else if(level == 'i'){
             numOfMines = 40;
             gridWidth = 16;
             gridHeight = 16;
+            screenWidth = 520;
+            screenHeight = 640;
         }
         else{
             numOfMines = 99;
             gridWidth = 30;
             gridHeight = 16;
+            screenWidth = 940;
+            screenHeight = 640;
         }
         grid = new Square[gridHeight][gridWidth];
         generateSquares();
@@ -36,7 +43,7 @@ public class Level {
         frame.setVisible(true);
     }
     public void generateSquares(){
-        int x = 20, y = 80;
+        int x = 20, y = 110;
         for(int i = 0; i<gridHeight; i++){
             for(int j = 0; j<gridWidth; j++){
                 grid[i][j] = new Square(x, y);
@@ -60,13 +67,16 @@ public class Level {
             g.setColor(Color.gray);
             g.fillRect(0,0,getWidth(),getHeight());
             g.setColor(Color.darkGray);
-            g.fillRect(10,10,getWidth()-20, 50);
-            g.fillRect(10,70, getWidth()-20, getHeight() - 80);
+            g.fillRect(10,10,getWidth()-20, 80);
+            g.fillRect(10,100, getWidth()-20, getHeight() - 110);
+            g.setColor(Color.black);
+            g.fillRect(20,20, 100, 60);
+            g.fillRect(getWidth()-120,20, 100, 60);
             drawGrid(g);
         }
         public void drawGrid(Graphics g){
             g.setColor(Color.lightGray);
-            g.fillRect(20,80, getWidth()-40, getHeight() - 100);
+            g.fillRect(20,110, getWidth()-40, getHeight() - 130);
             for (Square[] array : grid) {
                 for (Square gridSpot : array) {
                     if(!gridSpot.getVisibility()){
@@ -74,6 +84,11 @@ public class Level {
                         g.drawRect(gridSpot.x, gridSpot.y, 30,30);
                         g.drawRect(gridSpot.x+1, gridSpot.y+1, 29,29);
                         g.drawRect(gridSpot.x+2, gridSpot.y+2, 28,28);
+                        if(gridSpot.isFlag()){
+                            g.setFont(new Font("Serif", Font.BOLD, 25));
+                            String str = "\uD83D\uDEA9";
+                            g.drawString(str, gridSpot.x + 15 - (g.getFontMetrics().stringWidth(str)) / 2, gridSpot.y+25);
+                        }
                     }
                     else{
                         g.setColor(Color.darkGray);
@@ -126,15 +141,17 @@ public class Level {
                             }
                             else{
                                 space.calculateMines(grid, i, j);
-                                drawing.repaint();
                             }
                         }
                         else if(e.getButton() == MouseEvent.BUTTON3){
+                            if(space.isFlag()) flagsLeft++;
+                            else flagsLeft--;
                             space.turnFlag();
                         }
                     }
                 }
             }
+            drawing.repaint();
         }
     }
 

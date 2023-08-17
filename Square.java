@@ -11,6 +11,9 @@ public class Square {
     public boolean isMine(){
         return mine;
     }
+    public boolean isFlag(){
+        return flag;
+    }
     public void turnVisible(){
         isVisible = true;
     }
@@ -30,31 +33,36 @@ public class Square {
         int numOfMines = 0;
         grid[x][y].turnVisible();
         if(x != 0){
-            for(int i = y-1; i<=y+1; i++){
-                if(grid[x-1][i].isMine()) numOfMines++;
-            }
+            if(y != 0 && grid[x-1][y-1].isMine()) numOfMines++;
+            if(grid[x-1][y].isMine()) numOfMines++;
+            if(y != grid[0].length-1 && grid[x-1][y+1].isMine()) numOfMines++;
         }
         if(x != grid.length-1){
-            for(int i = y-1; i<=y+1; i++){
-                if(grid[x+1][i].isMine()) numOfMines++;
-            }
+            if(y != 0 && grid[x+1][y-1].isMine()) numOfMines++;
+            if(grid[x+1][y].isMine()) numOfMines++;
+            if(y != grid[0].length-1 && grid[x+1][y+1].isMine()) numOfMines++;
         }
         if(y != 0 && grid[x][y-1].isMine()) numOfMines++;
         if(y != grid[0].length-1 && grid[x][y+1].isMine()) numOfMines++;
         grid[x][y].numOfCloseMines = numOfMines;
+        Level.checkedSquares.add(grid[x][y]);
         if(numOfMines == 0){
             if(x != 0){
-                calculateMines(grid, x - 1, y - 1);
-                calculateMines(grid, x - 1, y);
-                calculateMines(grid, x - 1, y + 1);
+                if(y != 0 && !Level.checkedSquares.contains(grid[x-1][y-1])) calculateMines(grid, x-1, y-1);
+                if(!Level.checkedSquares.contains(grid[x-1][y])) calculateMines(grid, x-1, y);
+                if(y != grid[0].length-1 && !Level.checkedSquares.contains(grid[x-1][y+1])) calculateMines(grid, x-1, y+1);
             }
             if(x != grid.length-1){
-                calculateMines(grid, x + 1, y - 1);
-                calculateMines(grid, x + 1, y);
-                calculateMines(grid, x + 1, y + 1);
+                if(y != 0 && !Level.checkedSquares.contains(grid[x+1][y-1])) calculateMines(grid, x+1, y-1);
+                if(!Level.checkedSquares.contains(grid[x+1][y])) calculateMines(grid, x+1, y);
+                if(y != grid[0].length-1 && !Level.checkedSquares.contains(grid[x+1][y+1])) calculateMines(grid, x+1, y+1);
             }
-            if(y != 0) calculateMines(grid, x, y - 1);
-            if(y != grid[0].length-1) calculateMines(grid, x, y + 1);
+            if(y != 0){
+                if(!Level.checkedSquares.contains(grid[x][y-1])) calculateMines(grid, x, y - 1);
+            }
+            if(y != grid[0].length-1){
+                if(!Level.checkedSquares.contains(grid[x][y+1])) calculateMines(grid, x, y + 1);
+            }
         }
     }
     public Square(int x, int y){
