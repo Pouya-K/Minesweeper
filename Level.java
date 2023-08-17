@@ -1,12 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Level {
     private JFrame frame = new JFrame("Minesweeper");
     private Drawing drawing = new Drawing();
     private int screenWidth, screenHeight, numOfMines, gridWidth, gridHeight;
     private Square[][] grid;
+    private boolean gameOver = false;
     public Level(char level){
         if(level == 'b'){
             numOfMines = 10;
@@ -63,19 +65,49 @@ public class Level {
             drawGrid(g);
         }
         public void drawGrid(Graphics g){
+            g.setColor(Color.lightGray);
+            g.fillRect(20,80, getWidth()-40, getHeight() - 100);
             for (Square[] array : grid) {
                 for (Square gridSpot : array) {
-                    if(gridSpot.getVisibility()){
-                        g.setColor(Color.darkGray);
-                        g.fillRect(gridSpot.x, gridSpot.y, 30,30);
-                        g.setColor(Color.lightGray);
-                        g.fillRect(gridSpot.x + 2, gridSpot.y + 2, 28,28);
+                    if(!gridSpot.getVisibility()){
+                        g.setColor(Color.white);
+                        g.drawRect(gridSpot.x, gridSpot.y, 30,30);
+                        g.drawRect(gridSpot.x+1, gridSpot.y+1, 29,29);
+                        g.drawRect(gridSpot.x+2, gridSpot.y+2, 28,28);
                     }
                     else{
-                        g.setColor(Color.white);
-                        g.fillRect(gridSpot.x, gridSpot.y, 30,30);
-                        g.setColor(Color.lightGray);
-                        g.fillRect(gridSpot.x + 5, gridSpot.y + 5, 25,25);
+                        g.setColor(Color.darkGray);
+                        g.drawRect(gridSpot.x, gridSpot.y, 30,30);
+                        if(!gridSpot.isMine() && gridSpot.getNumOfCloseMines() != 0){
+                            switch (gridSpot.getNumOfCloseMines()){
+                                case 1:
+                                    g.setColor(Color.blue);
+                                    break;
+                                case 2:
+                                    g.setColor(Color.green);
+                                    break;
+                                case 3:
+                                    g.setColor(Color.red);
+                                    break;
+                                case 4:
+                                    g.setColor(new Color(42, 42, 147));
+                                    break;
+                                case 5:
+                                    g.setColor(new Color(128,0,1));
+                                    break;
+                                case 6:
+                                    g.setColor(new Color(42, 148, 148));
+                                    break;
+                                case 7:
+                                    g.setColor(Color.black);
+                                    break;
+                                case 8:
+                                    g.setColor(Color.darkGray);
+                            }
+                            g.setFont(new Font("Serif", Font.BOLD, 25));
+                            String num = gridSpot.getNumOfCloseMines() + "";
+                            g.drawString(num, gridSpot.x + 15 - (g.getFontMetrics().stringWidth(num)) / 2, gridSpot.y+25);
+                        }
                     }
                 }
             }
@@ -83,7 +115,27 @@ public class Level {
 
     }
     class Mousehandler extends MouseAdapter{
-
+        public void mouseClicked(MouseEvent e){
+            for(int i = 0; i<grid.length; i++){
+                for(int j = 0; j<grid[i].length; j++){
+                    Square space = grid[i][j];
+                    if(e.getX() >= space.x && e.getX() <= space.x+30 && e.getY() - 30 >= space.y && e.getY() - 30 <= space.y+30){
+                        if(e.getButton() == MouseEvent.BUTTON1){
+                            if(space.isMine()){
+                                System.out.println("mine");
+                            }
+                            else{
+                                space.calculateMines(grid, i, j);
+                                drawing.repaint();
+                            }
+                        }
+                        else if(e.getButton() == MouseEvent.BUTTON3){
+                            space.turnFlag();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
