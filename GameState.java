@@ -2,8 +2,9 @@ import java.util.ArrayList;
 
 public class GameState {
     private boolean leftClick = false, rightClick = false;
+
     private int flagsLeft;
-    public Square lostSquare;
+    private Square lostSquare;
     private int time = 0;
     private long timeTicker;
     private ArrayList<Square> checkedSquares = new ArrayList<Square>();
@@ -11,8 +12,15 @@ public class GameState {
     private Square[][] grid;
     public boolean gameOver = false;
     private boolean gameWon = false;
+    private Drawing drawing;
 
+    public Drawing getDrawing() {
+        return drawing;
+    }
 
+    public void setDrawing(Drawing drawing) {
+        this.drawing = drawing;
+    }
     public boolean isLeftClick() {
         return leftClick;
     }
@@ -151,5 +159,8 @@ public class GameState {
 
     public boolean checkedSquaresContains(Square square){
         return checkedSquares.contains(square);
+    }
+    public GameState(){
+        this.drawing = new Drawing(this);
     }
 }

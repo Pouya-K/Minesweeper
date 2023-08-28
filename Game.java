@@ -7,7 +7,7 @@ public class Game {
     JFrame frame = new JFrame("Minesweeper");
     Drawing drawing = new Drawing();
     private Color label1 = Color.black, label2 = Color.black, label3 = Color.black;
-    private Mousehandler mouseListen = new Mousehandler();
+    private Mouselistener mouseListen = new Mouselistener();
     public Game(){
         frame.setSize(300,250);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +29,7 @@ public class Game {
             g.drawString("Expert", (getWidth() - g.getFontMetrics().stringWidth("Expert")) / 2,190);
         }
     }
-    class Mousehandler extends MouseAdapter{
+    class Mouselistener extends MouseAdapter{
         public void mouseClicked(MouseEvent e){
             if(e.getX()>=95 && e.getX()<=200 && e.getY()>=95 && e.getY()<=120){
                 frame.dispose();
